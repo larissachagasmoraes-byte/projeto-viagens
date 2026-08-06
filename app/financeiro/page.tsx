@@ -221,7 +221,7 @@ export default function FinanceiroPage() {
           <div className="card bg-gradient-to-br from-blue-50 to-cyan-50">
             <h3 className="text-lg font-bold text-gray-800 mb-3">💡 Recomendação</h3>
             <div className="space-y-2">
-              {dados.crescimento > 0 ? (
+              {Number(dados.crescimento) > 0 ? (
                 <>
                   <p className="text-gray-700">
                     ✓ Você cresceu <strong>{dados.crescimento}%</strong> esse mês!
