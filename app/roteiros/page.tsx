@@ -131,6 +131,7 @@ export default function RoteirosPage() {
       descricao: roteiro.descricao,
       preco: roteiro.preco.toString(),
       duracaoDias: roteiro.duracaoDias.toString(),
+      pdfPath: roteiro.pdfPath || '',
     });
     setEditingId(roteiro.id);
     setShowForm(true);
