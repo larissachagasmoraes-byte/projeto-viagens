@@ -1,0 +1,133 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  nome      String
+  telefone  String?
+  chavePix  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  roteiros        Roteiro[]
+  vendas          Venda[]
+  clientes        Cliente[]
+  tarefas         Tarefa[]
+  sugestoes       Sugestao[]
+  tiktokDados     TiktokDados?
+}
+
+model TiktokDados {
+  id                    String   @id @default(cuid())
+  userId                String   @unique
+  usuario               String?
+  seguidores            Int      @default(0)
+  ultimoVideoData       DateTime?
+  ultimoVideoVisualizacoes Int @default(0)
+  ultimoVideoEngajamento Int @default(0)
+  nicho                 String?
+  taxaPostagem          String?  // "diaria", "semanal", "mensal"
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Roteiro {
+  id            String   @id @default(cuid())
+  userId        String
+  nome          String
+  descricao     String
+  preco         Float
+  duracaoDias   Int
+  pdfPath       String?  // Caminho do arquivo PDF
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  vendas        Venda[]
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model Venda {
+  id             String   @id @default(cuid())
+  userId         String
+  roteiroId      String
+  clienteId      String
+  preco          Float
+  status         String   @default("pendente") // pendente, pago, entregue
+  dataVenda      DateTime @default(now())
+  dataPagamento  DateTime?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  roteiro  Roteiro  @relation(fields: [roteiroId], references: [id], onDelete: Cascade)
+  cliente  Cliente  @relation(fields: [clienteId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([roteiroId])
+  @@index([clienteId])
+}
+
+model Cliente {
+  id              String   @id @default(cuid())
+  userId          String
+  nome            String
+  email           String
+  telefone        String?
+  instagram       String?
+  tiktok          String?
+  notas           String?
+  primeiraCompra  DateTime @default(now())
+  totalGasto      Float    @default(0)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  user   User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  vendas Venda[]
+
+  @@index([userId])
+  @@unique([userId, email])
+}
+
+model Tarefa {
+  id          String   @id @default(cuid())
+  userId      String
+  titulo      String
+  descricao   String
+  prioridade  String   @default("media") // baixa, media, alta
+  deadline    DateTime?
+  concluida   Boolean  @default(false)
+  tipo        String   @default("manual") // manual, sugestao
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model Sugestao {
+  id             String   @id @default(cuid())
+  userId         String
+  descricao      String
+  acaoSugerida   String
+  status         String   @default("ativa") // ativa, descartada
+  impacto        String   @default("medio") // baixo, medio, alto
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
