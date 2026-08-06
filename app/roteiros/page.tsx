@@ -10,6 +10,7 @@ interface Roteiro {
   descricao: string;
   preco: number;
   duracaoDias: number;
+  pdfPath?: string;
   createdAt: string;
 }
 
