@@ -60,7 +60,9 @@ export async function GET(request: NextRequest) {
       where: { userId },
       _count: true,
       orderBy: {
-        _count: 'desc',
+        _count: {
+          roteiroId: 'desc',
+        },
       },
       take: 1,
     });
